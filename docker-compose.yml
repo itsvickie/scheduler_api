@@ -1,0 +1,33 @@
+version: '3'
+
+networks:
+  scheduler: 
+    driver: bridge
+    name: scheduler_network
+
+services:
+  mongo:
+    container_name: scheduler_mongodb
+    image: mongo
+    ports: 
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "${MONGODB_USERNAME}"
+      MONGO_INITDB_ROOT_PASSWORD: "${MONGODB_PASSWORD}"
+    env_file:
+      - .env
+    networks:
+      - scheduler
+
+  app:
+    container_name: scheduler_api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: 'npm run start'
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    networks:
+      - scheduler
